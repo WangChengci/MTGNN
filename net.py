@@ -22,8 +22,14 @@ class gtnet(nn.Module):
         self.gc = graph_constructor(num_nodes, subgraph_size, node_dim, device, alpha=tanhalpha, static_feat=static_feat)
 
         self.seq_length = seq_length
+
+        # 时序卷积模块：膨胀（空洞）卷积 + inception层
+        # 膨胀（空洞）卷积:dilation_exponential > 1
+        # inception层:dilated_inception
+        # self.filter_convs.append(dilated_inception(residual_channels, conv_channels, dilation_factor=new_dilation))
         kernel_size = 7
         if dilation_exponential>1:
+            # 非标准卷积，每个kernel的像素点之间有空隙
             self.receptive_field = int(1+(kernel_size-1)*(dilation_exponential**layers-1)/(dilation_exponential-1))
         else:
             self.receptive_field = layers*(kernel_size-1) + 1
@@ -40,6 +46,8 @@ class gtnet(nn.Module):
                 else:
                     rf_size_j = rf_size_i+j*(kernel_size-1)
 
+                # 添加卷积层
+                # filter_convs和gate_convs??
                 self.filter_convs.append(dilated_inception(residual_channels, conv_channels, dilation_factor=new_dilation))
                 self.gate_convs.append(dilated_inception(residual_channels, conv_channels, dilation_factor=new_dilation))
                 self.residual_convs.append(nn.Conv2d(in_channels=conv_channels,
@@ -55,6 +63,7 @@ class gtnet(nn.Module):
                                                     kernel_size=(1, self.receptive_field-rf_size_j+1)))
 
                 if self.gcn_true:
+                    # whether to add graph convolution layer
                     self.gconv1.append(mixprop(conv_channels, residual_channels, gcn_depth, dropout, propalpha))
                     self.gconv2.append(mixprop(conv_channels, residual_channels, gcn_depth, dropout, propalpha))
 

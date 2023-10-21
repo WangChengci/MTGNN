@@ -31,16 +31,16 @@ python generate_training_data.py --output_dir=data/PEMS-BAY --traffic_df_filenam
 * Solar-Energy
 
 ```
-python train_single_step.py --save ./model-solar-3.pt --data ./data/solar_AL.txt --num_nodes 137 --batch_size 4 --epochs 30 --horizon 3
+python train_single_step.py --save ./model/model-solar-3.pt --data ./data/solar_AL.txt --num_nodes 137 --batch_size 4 --epochs 30 --horizon 3
 #sampling
-python train_single_step.py --num_split 3 --save ./model-solar-sampling-3.pt --data ./data/solar_AL.txt --num_nodes 137 --batch_size 16 --epochs 30 --horizon 3
+python train_single_step.py --num_split 3 --save ./model/sampling/model-solar-sampling-3.pt --data ./data/solar_AL.txt --num_nodes 137 --batch_size 16 --epochs 30 --horizon 3
 ```
 * Traffic 
 
 ```
-python train_single_step.py --save ./model-traffic3.pt --data ./data/traffic.txt --num_nodes 862 --batch_size 16 --epochs 30 --horizon 3
+python train_single_step.py --save ./model/model-traffic3.pt --data ./data/traffic.txt --num_nodes 862 --batch_size 16 --epochs 30 --horizon 3
 #sampling
-python train_single_step.py --num_split 3 --save ./model-traffic-sampling-3.pt --data ./data/traffic --num_nodes 321 --batch_size 16 --epochs 30 --horizon 3
+python train_single_step.py --num_split 3 --save ./model/sampling/model-traffic-sampling-3.pt --data ./data/traffic --num_nodes 321 --batch_size 16 --epochs 30 --horizon 3
 ```
 
 * Electricity
@@ -48,7 +48,7 @@ python train_single_step.py --num_split 3 --save ./model-traffic-sampling-3.pt -
 ```
 python train_single_step.py --save ./model-electricity-3.pt --data ./data/electricity.txt --num_nodes 321 --batch_size 4 --epochs 30 --horizon 3
 #sampling 
-python train_single_step.py --num_split 3 --save ./model-electricity-sampling-3.pt --data ./data/electricity.txt --num_nodes 321 --batch_size 16 --epochs 30 --horizon 3
+python train_single_step.py --num_split 3 --save ./model/sampling/model-electricity-sampling-3.pt --data ./data/electricity.txt --num_nodes 321 --batch_size 16 --epochs 30 --horizon 3
 ```
 
 * Exchange-Rate
@@ -56,7 +56,7 @@ python train_single_step.py --num_split 3 --save ./model-electricity-sampling-3.
 ```
 python train_single_step.py --save ./model/model-exchange-3.pt --data ./data/exchange_rate.txt --num_nodes 8 --subgraph_size 8  --batch_size 4 --epochs 30 --horizon 3
 #sampling
-python train_single_step.py --num_split 3 --save ./model-exchange-3.pt --data ./data/exchange_rate.txt --num_nodes 8 --subgraph_size 2  --batch_size 16 --epochs 30 --horizon 3
+python train_single_step.py --num_split 3 --save ./model/sampling/model-exchange-3.pt --data ./data/exchange_rate.txt --num_nodes 8 --subgraph_size 2  --batch_size 16 --epochs 30 --horizon 3
 ```
 ### Multi-step
 * METR-LA

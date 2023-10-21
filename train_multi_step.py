@@ -17,8 +17,10 @@ def str_to_bool(value):
 
 
 parser = argparse.ArgumentParser()
+# python train_single_step.py --save ./model/model-exchange-3.pt --data ./data/exchange_rate.txt
+# --num_nodes 8 --subgraph_size 8  --batch_size 4 --epochs 30 --horizon 3
 
-parser.add_argument('--device',type=str,default='cuda:1',help='')
+parser.add_argument('--device',type=str,default='cuda:0',help='')
 parser.add_argument('--data',type=str,default='data/METR-LA',help='data path')
 
 parser.add_argument('--adj_data', type=str,default='data/sensor_graph/adj_mx.pkl',help='adj data path')
@@ -248,6 +250,7 @@ if __name__ == "__main__":
     mape = []
     rmse = []
     for i in range(args.runs):
+
         vm1, vm2, vm3, m1, m2, m3 = main(i)
         vmae.append(vm1)
         vmape.append(vm2)
