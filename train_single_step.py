@@ -100,7 +100,7 @@ parser.add_argument('--log_interval', type=int, default=2000, metavar='N',
 parser.add_argument('--save', type=str, default='model/model.pt',
                     help='path to save the final model')
 parser.add_argument('--optim', type=str, default='adam')
-parser.add_argument('--L1Loss', type=bool, default=True)
+parser.add_argument('--L1Loss', type=bool, default=True, help='if False then use MSELoss')
 parser.add_argument('--normalize', type=int, default=2)
 parser.add_argument('--device',type=str,default='cuda:0',help='')
 parser.add_argument('--gcn_true', type=bool, default=True, help='whether to add graph convolution layer')

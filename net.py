@@ -27,6 +27,7 @@ class gtnet(nn.Module):
         # 膨胀（空洞）卷积:dilation_exponential > 1
         # inception层:dilated_inception
         # self.filter_convs.append(dilated_inception(residual_channels, conv_channels, dilation_factor=new_dilation))
+        # 该模块用于处理时间序列，根据不同的膨胀率和层数，来构建卷积层
         kernel_size = 7
         if dilation_exponential>1:
             # 非标准卷积，每个kernel的像素点之间有空隙
@@ -99,22 +100,49 @@ class gtnet(nn.Module):
         seq_len = input.size(3)
         assert seq_len==self.seq_length, 'input sequence length not equal to preset sequence length'
 
-        if self.seq_length<self.receptive_field:
+        if self.seq_length < self.receptive_field:
+            # receptive_field感受野大小，表示这个神经网络模型能接受的输入范围
+            # 如果输入self.seq_length < self.receptive_field，那么就会进行pad(填充)操作
+            # 使得输入数据的长度达到receptive_field大小，以便模型可以正常运行
             input = nn.functional.pad(input,(self.receptive_field-self.seq_length,0,0,0))
 
-
-
+        # 是否使用gcn
         if self.gcn_true:
+            # 是否构造邻接矩阵
+            # 否则就是用预先定义好的邻接矩阵
             if self.buildA_true:
+                # self.idx = torch.arange(self.num_nodes).to(device)  idx为图的节点序列
+                # 对图进行图构造(graph learning layer)
+                # self.gc = graph_constructor(num_nodes, subgraph_size, node_dim, device, alpha=tanhalpha, static_feat=static_feat)
                 if idx is None:
+                    # gc(self.idx) return一个自适应的邻接矩阵
                     adp = self.gc(self.idx)
                 else:
                     adp = self.gc(idx)
             else:
                 adp = self.predefined_A
 
+        #  self.start_conv = nn.Conv2d(in_channels=in_dim,
+        #                              out_channels=residual_channels,
+        #                              kernel_size=(1, 1))
         x = self.start_conv(input)
+
+        # 使用残差连接(Residual connections)和跳跃连接(skip connections)来避免梯度消失问题
+
+        # self.skip0 = nn.Conv2d(in_channels=in_dim, out_channels=skip_channels, kernel_size=(1, self.seq_length), bias=True)
+        # self.skipE = nn.Conv2d(in_channels=residual_channels, out_channels=skip_channels,
+        #             kernel_size=(1, self.seq_length-self.receptive_field+1), bias=True)
+
+        # 什么是跳跃连接
+        # Skip connection（跳跃连接）是一种神经网络架构设计的技巧，
+        # 它的目的是将某一层的输入直接传递到网络中的后续层，以避免梯度消失或梯度爆炸问题，以及提高网络训练的稳定性和效果。
+        # kernel_size=(1, self.seq_length)：这表示卷积核的大小，其中 1 表示在时间维度上的卷积核大小，
+        # 而 self.seq_length 表示卷积核在时间上的宽度等于输入数据的长度，这使得它能够跳过整个时间序列的信息。
+
+
         skip = self.skip0(F.dropout(input, self.dropout, training=self.training))
+
+        # 看到这了
         for i in range(self.layers):
             residual = x
             filter = self.filter_convs[i](x)

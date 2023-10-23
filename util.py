@@ -12,19 +12,29 @@ def normal_std(x):
 class DataLoaderS(object):
     # train and valid is the ratio of training set and validation set. test = 1 - train - valid
     def __init__(self, file_name, train, valid, device, horizon, window, normalize=2):
-        self.P = window
-        self.h = horizon
+    # DataLoaderS(args.data, 0.6, 0.2, device, args.horizon, args.seq_in_len, args.normalize)
+        self.P = window # 24*7 = 168
+        self.h = horizon # 3
         fin = open(file_name)
-        self.rawdat = np.loadtxt(fin, delimiter=',')
+        self.rawdat = np.loadtxt(fin, delimiter=',') # (7588, 8)
         self.dat = np.zeros(self.rawdat.shape)
         self.n, self.m = self.dat.shape
         self.normalize = 2
-        self.scale = np.ones(self.m)
+        self.scale = np.ones(self.m) # 长为m的单位向量
         self._normalized(normalize)
+        #  if (normalize == 2):
+        #      for i in range(self.m):
+        #         self.scale[i] = np.max(np.abs(self.rawdat[:, i]))
+        #         self.dat[:, i] = self.rawdat[:, i] / np.max(np.abs(self.rawdat[:, i]))
+        # scale[]是rawdat的每一列的最大值
+        # dat[]是将该rawdat[:, -1]列的所有数据点都除以该列中的最大绝对值，从而进行归一化。
+
         self._split(int(train * self.n), int((train + valid) * self.n), self.n)
 
         self.scale = torch.from_numpy(self.scale).float()
         tmp = self.test[1] * self.scale.expand(self.test[1].size(0), self.m)
+        # 将scale扩展到(test[1].size(0) ,m)，即(1518, 8)大小的数组
+        # [i, j] 与 [i, j] 相乘将得到 [i * i, j * j]，即对应位置上的元素分别相乘。用于元素的归一化
 
         self.scale = self.scale.to(device)
         self.scale = Variable(self.scale)
