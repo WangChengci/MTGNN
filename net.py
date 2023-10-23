@@ -144,12 +144,19 @@ class gtnet(nn.Module):
 
         # 看到这了
         for i in range(self.layers):
+            # 时间卷积模块应用一组标准扩张一维卷积滤波器来提取高级时间特征。
+            # 该模块由两个扩展的初始层组成。
+            # 一个扩张的初始层后面是一个tanh()激活函数，并充当过滤器。
+            # 另一层后面是 sigmoid 激活函数，用作控制过滤器可以传递到下一个模块的信息量的门。
             residual = x
+
             filter = self.filter_convs[i](x)
             filter = torch.tanh(filter)
             gate = self.gate_convs[i](x)
             gate = torch.sigmoid(gate)
+
             x = filter * gate
+
             x = F.dropout(x, self.dropout, training=self.training)
             s = x
             s = self.skip_convs[i](s)
